@@ -11,3 +11,7 @@ wheels/
 
 # Folders
 data/
+.claude
+**/training_data
+
+.DS_Store

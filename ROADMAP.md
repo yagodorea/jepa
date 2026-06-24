@@ -106,17 +106,17 @@ pixels, (b) what collapse is, and (c) name the three JEPA pieces and what each d
 *Before any learning model, we need the world and data from it.*
 
 ### 1.1 Define the environment (gym-style interface)
-- [ ] Decide observation: render to a small image (e.g. 64×64, grayscale or RGB)
-- [ ] Decide actions: discrete `{up, down, left, right, stay}`
-- [ ] Decide dynamics: agent moves 1 step/tile per action, walls block movement
-- [ ] Implement `reset() -> obs` and `step(action) -> (obs, done, info)`
-- [ ] Render function for human viewing (sanity check the physics)
+- [X] Decide observation: render to a small image (e.g. 64×64, grayscale or RGB)
+- [X] Decide actions: discrete `{up, down, left, right, stay}`
+- [X] Decide dynamics: agent moves 1 step/tile per action, walls block movement
+- [X] Implement `reset() -> obs` and `step(action) -> (obs, done, info)`
+- [X] Render function for human viewing (sanity check the physics)
 
 ### 1.2 Collect a dataset
-- [ ] Run a **random policy** for many episodes
-- [ ] Save transitions as tuples **(oₜ, aₜ, oₜ₊₁)** — this triple is the heart of an action-conditioned world model
-- [ ] Build a `Dataset`/`DataLoader` that serves batches of these triples
-- [ ] Visualize a few triples to confirm they're correct (action actually causes the change)
+- [X] Run a **random policy** for many episodes
+- [X] Save transitions as tuples **(oₜ, aₜ, oₜ₊₁)** — this triple is the heart of an action-conditioned world model
+- [X] Build a `Dataset`/`DataLoader` that serves batches of these triples
+- [X] Visualize a few triples to confirm they're correct (action actually causes the change)
 
 **Checkpoint 1:** You can sample a batch of (oₜ, aₜ, oₜ₊₁) and eyeball that the transition
 makes sense.
@@ -130,19 +130,19 @@ full dynamics. Here the "context" and "target" are two views/parts of the **same
 problem.*
 
 ### 2.1 Build the pieces
-- [ ] **Encoder** (small CNN): image → embedding vector (or grid of patch embeddings)
-- [ ] **Target encoder**: start as an EMA copy of the encoder, updated each step, **stop-grad**
-- [ ] **Predictor** (small MLP/transformer): predicts target embedding from context embedding
-- [ ] **Loss**: L2 / smooth-L1 between predicted and target embeddings (NOT pixels)
+- [X] **Encoder** (small CNN): image → embedding vector (or grid of patch embeddings)
+- [X] **Target encoder**: start as an EMA copy of the encoder, updated each step, **stop-grad**
+- [X] **Predictor** (small MLP/transformer): predicts target embedding from context embedding
+- [X] **Loss**: L2 / smooth-L1 between predicted and target embeddings (NOT pixels)
 
 ### 2.2 Train and — most importantly — watch for collapse
-- [ ] Implement the EMA update for the target encoder
-- [ ] Train; log the **per-dimension standard deviation of embeddings** across a batch
-- [ ] Collapse alarm: if embedding std → ~0, you've collapsed. Understand *why* it happened.
-- [ ] (Ablation to internalize the lesson) Try training **without** EMA/stop-grad and watch it collapse on purpose.
+- [X] Implement the EMA update for the target encoder
+- [X] Train; log the **per-dimension standard deviation of embeddings** across a batch
+- [X] Collapse alarm: if embedding std → ~0, you've collapsed. Understand *why* it happened.
+- [X] (Ablation to internalize the lesson) Try training **without** EMA/stop-grad and watch it collapse on purpose.
 
 ### 2.3 Prove the embeddings are meaningful
-- [ ] Train a **linear probe**: freeze the encoder, fit a tiny linear layer that decodes the
+- [X] Train a **linear probe**: freeze the encoder, fit a tiny linear layer that decodes the
       agent's (x, y) position from the embedding. If position decodes well, the latent is real.
 
 **Checkpoint 2:** Embeddings don't collapse (std stays healthy) **and** a linear probe recovers
@@ -288,3 +288,8 @@ missions by planning abstractly up top and controlling precisely down below.
 
 - 2026-06-15 — Created roadmap; chose 2D multi-level navigation game with H-JEPA endgame. —
   Understood the game↔architecture ladder. — Next: Phase 0 setup.
+- 2026-06-21 — Phase 0 done. Built lesson0.1 (autograd fwd/bwd), 0.3 sine-fit MLP, 0.3 MNIST
+  CNN (96% trained vs 2.3% untrained — proved learning via untrained baseline). — Internalized:
+  forward/backward/step loop, backprop writes .grad / optimizer reads it, conv filters as learned
+  pattern detectors, maxpool downsampling, shape/broadcast bugs, lr overshoot. — Next: Phase 1,
+  build the Level-1 game environment.
